@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Digital Gratuito — Tu Marca en Redes</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #e8ff00;
+    --accent2: #ff4d00;
+    --text: #f0f0f0;
+    --muted: #888;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    z-index: 100;
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  /* HEADER */
+  .header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  .step-counter {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .step-counter span {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px 60px;
+  }
+
+  /* SCREENS */
+  .screen {
+    display: none;
+    max-width: 680px;
+    width: 100%;
+    animation: fadeUp 0.5s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* INTRO SCREEN */
+  .intro-tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    margin-bottom: 28px;
+  }
+
+  .intro-title {
+    font-family: var(--font-display);
+    font-size: clamp(52px, 8vw, 90px);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+
+  .intro-title em {
+    font-style: normal;
+    color: var(--accent);
+    display: block;
+  }
+
+  .intro-desc {
+    font-size: 17px;
+    color: #bbb;
+    line-height: 1.7;
+    margin-bottom: 16px;
+    max-width: 520px;
+  }
+
+  .value-list {
+    list-style: none;
+    margin: 28px 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .value-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    color: #ccc;
+  }
+
+  .value-list li::before {
+    content: '→';
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+
+  .time-badge span { color: var(--accent); font-weight: 600; }
+
+  /* QUESTION SCREEN */
+  .q-block {
+    margin-bottom: 8px;
+  }
+
+  .q-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .q-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 46px);
+    letter-spacing: 1px;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  .q-sub {
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  /* OPTIONS GRID */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 36px;
+  }
+
+  .options.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .opt {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 15px;
+    color: #ccc;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .opt::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transition: transform 0.2s;
+  }
+
+  .opt:hover {
+    border-color: #444;
+    color: #fff;
+    background: var(--surface2);
+  }
+
+  .opt:hover::before { transform: scaleY(1); }
+
+  .opt.selected {
+    border-color: var(--accent);
+    color: #fff;
+    background: rgba(232,255,0,0.07);
+  }
+
+  .opt.selected::before { transform: scaleY(1); }
+
+  .opt-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    width: 28px;
+    text-align: center;
+  }
+
+  /* SCALE OPTIONS */
+  .scale-opts {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .scale-opt {
+    flex: 1;
+    min-width: 56px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 14px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: var(--muted);
+  }
+
+  .scale-opt:hover {
+    border-color: #555;
+    color: #fff;
+  }
+
+  .scale-opt.selected {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,255,0,0.07);
+  }
+
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: -28px;
+    margin-bottom: 36px;
+    padding: 0 4px;
+  }
+
+  /* TEXT AREA */
+  .open-field {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 18px 20px;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+
+  .open-field:focus {
+    border-color: var(--accent);
+  }
+
+  .open-field::placeholder { color: #555; }
+
+  /* TEXT INPUT */
+  .text-field {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    padding: 18px 20px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 36px;
+  }
+
+  .text-field:focus { border-color: var(--accent); }
+  .text-field::placeholder { color: #555; }
+
+  /* BUTTONS */
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    font-family: var(--font-display);
+    font-size: 20px;
+    letter-spacing: 2px;
+    padding: 18px 48px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-primary:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(232,255,0,0.2);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 12px 0;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .btn-secondary:hover { color: #fff; }
+
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .nav-left { display: flex; flex-direction: column; gap: 10px; }
+
+  /* VALIDATION ERROR */
+  .field-error {
+    font-size: 13px;
+    color: var(--accent2);
+    margin-top: -28px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .field-error.show { display: block; }
+
+  /* THANK YOU SCREEN */
+  .thanks-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .thanks-title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 7vw, 80px);
+    line-height: 1;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .thanks-title span { color: var(--accent); }
+
+  .thanks-desc {
+    font-size: 17px;
+    color: #bbb;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    max-width: 500px;
+  }
+
+  .deliverable-box {
+    border: 1px solid var(--accent);
+    background: rgba(232,255,0,0.05);
+    padding: 24px 28px;
+    margin-bottom: 32px;
+  }
+
+  .deliverable-box h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+
+  .deliverable-box p {
+    font-size: 15px;
+    color: #ccc;
+    line-height: 1.6;
+  }
+
+  /* DECORATIVE LINE */
+  .deco-line {
+    width: 48px;
+    height: 3px;
+    background: var(--accent);
+    margin-bottom: 24px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .header { padding: 16px 20px; }
+    main { padding: 90px 16px 40px; }
+    .options.grid-2 { grid-template-columns: 1fr; }
+    .nav-row { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* MULTI-SELECT HINT */
+  .multi-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: -24px;
+    margin-bottom: 28px;
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+<header class="header">
+  <div class="logo">CINE PARA TU MARCA</div>
+  <div class="step-counter" id="stepCounter"></div>
+</header>
+
+<main>
+
+  <!-- SCREEN 0: INTRO -->
+  <div class="screen active" id="screen-0">
+    <div class="intro-tag">✦ Diagnóstico Gratuito</div>
+    <h1 class="intro-title">
+      ¿Tu marca<br>
+      <em>existe</em><br>
+      en digital?
+    </h1>
+    <p class="intro-desc">
+      Responde 8 preguntas y en <strong style="color:#fff">48 horas</strong> recibes un diagnóstico personalizado de tu presencia digital — gratis, sin compromisos.
+    </p>
+    <div class="time-badge">
+      ⏱ Tarda menos de <span>3 minutos</span> en completarse
+    </div>
+    <ul class="value-list">
+      <li>Qué está haciendo tu competencia que tú todavía no</li>
+      <li>Por qué tu contenido actual no está convirtiendo clientes</li>
+      <li>Qué tipo de video generaría más ventas para tu negocio</li>
+    </ul>
+    <button class="btn-primary" onclick="goTo(1)">
+      Quiero mi diagnóstico →
+    </button>
+  </div>
+
+  <!-- SCREEN 1: NOMBRE -->
+  <div class="screen" id="screen-1">
+    <div class="q-block">
+      <span class="q-label">Antes de empezar</span>
+      <div class="deco-line"></div>
+      <h2 class="q-title">¿Cómo se llama tu negocio?</h2>
+      <p class="q-sub">Para personalizar tu diagnóstico necesito saber con quién hablo.</p>
+      <input class="text-field" type="text" id="q-nombre" placeholder="Ej: Restaurante El Fogón, Clínica DentaVida…">
+      <p class="field-error" id="err-nombre">Por favor escribe el nombre de tu negocio.</p>
+    </div>
+    <div class="nav-row">
+      <div class="nav-left">
+        <button class="btn-primary" onclick="next(1)">Continuar →</button>
+        <button class="btn-secondary" onclick="goTo(0)">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: SECTOR -->
+  <div class="screen" id="screen-2">
+    <div class="q-block">
+      <span class="q-label">Pregunta 1 de 7</span>
+      <div class="deco-line"></div>
+      <h2 class="q-title">¿En qué sector opera tu negocio?</h2>
+      <p class="q-sub">Elige la opción que mejor te describe.</p>
+    </div>
+    <div class="options grid-2" id="q-sector">
+      <button class="opt" onclick="select('q-sector', this, false)" data-value="restaurante-cafe">
+        <span class="opt-icon">🍽️</span> Restaurante / Café
+      </button>
+      <button class="opt" onclick="select('q-sector', this, false)" data-value="moda-belleza">
+        <span class="opt-icon">👗</span> Moda / Belleza
+      </button>
+      <button class="opt" onclick="select('q-sector', this, false)" data-value="salud-bienestar">
+        <span class="opt-icon">🏥</span> Salud / Bienestar
+      </button>
+      <button class="opt" onclick="select('q-sector', this, false)" data-value="comercio-retail">
+        <span class="opt-icon">🛍️</span> Comercio / Retail
+      </button>
+      <button class="opt" onclick="select('q-sector', this, false)" data-value="servicios-profesionales">
+        <span class="opt-icon">💼</span> Servicios profesionales
+      </button>
+      <button class="opt" onclick="select('q-sector', this, false)" data-value="construccion-finca-raiz">
+        <span class="opt-icon">🏗️</span> Construcción / Finca raíz
+      </button>
+      <button class="opt" onclick="select('q-sector', this, false)" data-value="educacion">
+        <span class="opt-icon">📚</span> Educación
+      </button>
+      <button class="opt" onclick="select('q-sector', this, false)" data-value="otro">
+        <span class="opt-icon">✦</span> Otro sector
+      </button>
+    </div>
+    <p class="field-error" id="err-sector">Selecciona una opción para continuar.</p>
+    <div class="nav-row">
+      <div class="nav-left">
+        <button class="btn-primary" onclick="next(2)">Continuar →</button>
+        <button class="btn-secondary" onclick="goTo(1)">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: TIEMPO -->
+  <div class="screen" id="screen-3">
+    <div class="q-block">
+      <span class="q-label">Pregunta 2 de 7</span>
+      <div class="deco-line"></div>
+      <h2 class="q-title">¿Cuánto tiempo lleva operando tu negocio?</h2>
+      <p class="q-sub">La antigüedad nos dice mucho sobre el potencial de crecimiento digital.</p>
+    </div>
+    <div class="options" id="q-tiempo">
+      <button class="opt" onclick="select('q-tiempo', this, false)" data-value="menos-1">
+        <span class="opt-icon">🌱</span> Menos de 1 año — estamos arrancando
+      </button>
+      <button class="opt" onclick="select('q-tiempo', this, false)" data-value="1-3">
+        <span class="opt-icon">📈</span> Entre 1 y 3 años — ya tenemos base de clientes
+      </button>
+      <button class="opt" onclick="select('q-tiempo', this, false)" data-value="3-10">
+        <span class="opt-icon">🏛️</span> Entre 3 y 10 años — negocio establecido
+      </button>
+      <button class="opt" onclick="select('q-tiempo', this, false)" data-value="mas-10">
+        <span class="opt-icon">⭐</span> Más de 10 años — trayectoria larga
+      </button>
+    </div>
+    <p class="field-error" id="err-tiempo">Selecciona una opción para continuar.</p>
+    <div class="nav-row">
+      <div class="nav-left">
+        <button class="btn-primary" onclick="next(3)">Continuar →</button>
+        <button class="btn-secondary" onclick="goTo(2)">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: REDES -->
+  <div class="screen" id="screen-4">
+    <div class="q-block">
+      <span class="q-label">Pregunta 3 de 7</span>
+      <div class="deco-line"></div>
+      <h2 class="q-title">¿En qué redes tienen presencia actualmente?</h2>
+      <p class="q-sub">Puedes elegir varias opciones.</p>
+    </div>
+    <p class="multi-hint">Selección múltiple permitida</p>
+    <div class="options grid-2" id="q-redes">
+      <button class="opt" onclick="select('q-redes', this, true)" data-value="instagram">
+        <span class="opt-icon">📸</span> Instagram
+      </button>
+      <button class="opt" onclick="select('q-redes', this, true)" data-value="tiktok">
+        <span class="opt-icon">🎵</span> TikTok
+      </button>
+      <button class="opt" onclick="select('q-redes', this, true)" data-value="facebook">
+        <span class="opt-icon">👥</span> Facebook
+      </button>
+      <button class="opt" onclick="select('q-redes', this, true)" data-value="youtube">
+        <span class="opt-icon">▶️</span> YouTube
+      </button>
+      <button class="opt" onclick="select('q-redes', this, true)" data-value="whatsapp">
+        <span class="opt-icon">💬</span> WhatsApp Business
+      </button>
+      <button class="opt" onclick="select('q-redes', this, true)" data-value="ninguna">
+        <span class="opt-icon">🚫</span> Ninguna todavía
+      </button>
+    </div>
+    <p class="field-error" id="err-redes">Selecciona al menos una opción.</p>
+    <div class="nav-row">
+      <div class="nav-left">
+        <button class="btn-primary" onclick="next(4)">Continuar →</button>
+        <button class="btn-secondary" onclick="goTo(3)">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: FRECUENCIA -->
+  <div class="screen" id="screen-5">
+    <div class="q-block">
+      <span class="q-label">Pregunta 4 de 7</span>
+      <div class="deco-line"></div>
+      <h2 class="q-title">¿Con qué frecuencia publican contenido?</h2>
+      <p class="q-sub">Sin juicios — esto nos dice en qué punto está tu marca hoy.</p>
+    </div>
+    <div class="options" id="q-frecuencia">
+      <button class="opt" onclick="select('q-frecuencia', this, false)" data-value="diario">
+        <span class="opt-icon">🔥</span> Todos los días o casi todos los días
+      </button>
+      <button class="opt" onclick="select('q-frecuencia', this, false)" data-value="varias-semana">
+        <span class="opt-icon">📅</span> Varias veces por semana
+      </button>
+      <button class="opt" onclick="select('q-frecuencia', this, false)" data-value="una-semana">
+        <span class="opt-icon">📌</span> Una vez por semana aproximadamente
+      </button>
+      <button class="opt" onclick="select('q-frecuencia', this, false)" data-value="esporadico">
+        <span class="opt-icon">😬</span> Cuando podemos — sin constancia
+      </button>
+      <button class="opt" onclick="select('q-frecuencia', this, false)" data-value="no-publicamos">
+        <span class="opt-icon">💤</span> Prácticamente no publicamos
+      </button>
+    </div>
+    <p class="field-error" id="err-frecuencia">Selecciona una opción para continuar.</p>
+    <div class="nav-row">
+      <div class="nav-left">
+        <button class="btn-primary" onclick="next(5)">Continuar →</button>
+        <button class="btn-secondary" onclick="goTo(4)">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 6: CALIDAD -->
+  <div class="screen" id="screen-6">
+    <div class="q-block">
+      <span class="q-label">Pregunta 5 de 7</span>
+      <div class="deco-line"></div>
+      <h2 class="q-title">¿Cómo calificarías el contenido que publican hoy?</h2>
+      <p class="q-sub">Sé honesto — el diagnóstico será más preciso si partes de la realidad.</p>
+    </div>
+    <div class="options" id="q-calidad">
+      <button class="opt" onclick="select('q-calidad', this, false)" data-value="muy-bueno">
+        <span class="opt-icon">🏆</span> Muy bueno — tenemos producción profesional
+      </button>
+      <button class="opt" onclick="select('q-calidad', this, false)" data-value="regular">
+        <span class="opt-icon">🤷</span> Regular — lo hacemos nosotros mismos como podemos
+      </button>
+      <button class="opt" onclick="select('q-calidad', this, false)" data-value="necesita-mejorar">
+        <span class="opt-icon">🔧</span> Sé que necesita mejorar — pero no sé cómo
+      </button>
+      <button class="opt" onclick="select('q-calidad', this, false)" data-value="no-tenemos">
+        <span class="opt-icon">📭</span> No tenemos contenido visual actualmente
+      </button>
+    </div>
+    <p class="field-error" id="err-calidad">Selecciona una opción para continuar.</p>
+    <div class="nav-row">
+      <div class="nav-left">
+        <button class="btn-primary" onclick="next(6)">Continuar →</button>
+        <button class="btn-secondary" onclick="goTo(5)">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 7: FRUSTRACION -->
+  <div class="screen" id="screen-7">
+    <div class="q-block">
+      <span class="q-label">Pregunta 6 de 7</span>
+      <div class="deco-line"></div>
+      <h2 class="q-title">¿Cuál es tu mayor obstáculo con el marketing digital?</h2>
+      <p class="q-sub">Esto nos permite enfocarnos exactamente en lo que necesitas.</p>
+    </div>
+    <div class="options" id="q-frustracion">
+      <button class="opt" onclick="select('q-frustracion', this, false)" data-value="no-se-por-donde">
+        <span class="opt-icon">🗺️</span> No sé por dónde empezar — me abruma
+      </button>
+      <button class="opt" onclick="select('q-frustracion', this, false)" data-value="sin-resultados">
+        <span class="opt-icon">📉</span> Publico pero no veo resultados ni ventas
+      </button>
+      <button class="opt" onclick="select('q-frustracion', this, false)" data-value="sin-tiempo">
+        <span class="opt-icon">⏰</span> No tengo tiempo ni equipo para crear contenido
+      </button>
+      <button class="opt" onclick="select('q-frustracion', this, false)" data-value="sin-presupuesto">
+        <span class="opt-icon">💸</span> Creo que no tengo presupuesto para esto
+      </button>
+      <button class="opt" onclick="select('q-frustracion', this, false)" data-value="no-creo">
+        <span class="opt-icon">🤔</span> Honestamente no creo que el digital funcione para mi negocio
+      </button>
+    </div>
+    <p class="field-error" id="err-frustracion">Selecciona una opción para continuar.</p>
+    <div class="nav-row">
+      <div class="nav-left">
+        <button class="btn-primary" onclick="next(7)">Continuar →</button>
+        <button class="btn-secondary" onclick="goTo(6)">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 8: COMPETENCIA -->
+  <div class="screen" id="screen-8">
+    <div class="q-block">
+      <span class="q-label">Pregunta 7 de 7</span>
+      <div class="deco-line"></div>
+      <h2 class="q-title">¿Ves que tu competencia está creciendo más que tú en redes?</h2>
+      <p class="q-sub">Esta pregunta define la urgencia real de actuar.</p>
+    </div>
+    <div class="options" id="q-competencia">
+      <button class="opt" onclick="select('q-competencia', this, false)" data-value="si-claramente">
+        <span class="opt-icon">😤</span> Sí, claramente — me están ganando terreno
+      </button>
+      <button class="opt" onclick="select('q-competencia', this, false)" data-value="creo-que-si">
+        <span class="opt-icon">😕</span> Creo que sí, pero no lo monitoreo bien
+      </button>
+      <button class="opt" onclick="select('q-competencia', this, false)" data-value="no-lo-se">
+        <span class="opt-icon">🕵️</span> Honestamente no lo sé — nunca lo he revisado
+      </button>
+      <button class="opt" onclick="select('q-competencia', this, false)" data-value="no">
+        <span class="opt-icon">💪</span> No — estamos bien posicionados
+      </button>
+    </div>
+    <p class="field-error" id="err-competencia">Selecciona una opción para continuar.</p>
+
+    <!-- PREGUNTA ABIERTA FINAL -->
+    <div style="margin-top: 32px;">
+      <span class="q-label" style="display:block; margin-bottom:12px;">Opcional — cuéntame un poco más</span>
+      <p style="font-size:15px; color:var(--muted); margin-bottom:16px; line-height:1.6;">
+        ¿Hay algo específico que quisieras mejorar en cómo tu marca se ve en internet?
+      </p>
+      <textarea class="open-field" id="q-abierta" placeholder="Ej: Quiero que la gente entre y sienta que somos profesionales. Quiero vender más por WhatsApp. No sé cómo mostrar lo que hacemos sin que se vea aburrido…"></textarea>
+    </div>
+
+    <div class="nav-row">
+      <div class="nav-left">
+        <button class="btn-primary" onclick="nextToContact()">Continuar →</button>
+        <button class="btn-secondary" onclick="goTo(7)">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 9: CONTACTO -->
+  <div class="screen" id="screen-9">
+    <div class="q-block">
+      <span class="q-label">Último paso</span>
+      <div class="deco-line"></div>
+      <h2 class="q-title">¿Dónde te enviamos el diagnóstico?</h2>
+      <p class="q-sub">Solo necesitamos estos datos para enviarte el análisis personalizado y, si lo que encontramos vale la pena, mostrarte cómo podemos ayudarte con video.</p>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:12px;">
+      <div>
+        <label style="font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:8px;">Nombre y apellido *</label>
+        <input class="text-field" type="text" id="c-nombre" placeholder="Tu nombre completo" style="margin-bottom:0;">
+        <p class="field-error" id="err-c-nombre">Por favor escribe tu nombre.</p>
+      </div>
+      <div>
+        <label style="font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:8px;">WhatsApp *</label>
+        <input class="text-field" type="tel" id="c-whatsapp" placeholder="+57 300 000 0000" style="margin-bottom:0;">
+        <p class="field-error" id="err-c-whatsapp">Ingresa tu número de WhatsApp.</p>
+      </div>
+      <div>
+        <label style="font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:8px;">Correo electrónico *</label>
+        <input class="text-field" type="email" id="c-email" placeholder="tu@correo.com" style="margin-bottom:0;">
+        <p class="field-error" id="err-c-email">Ingresa un correo válido.</p>
+      </div>
+      <div>
+        <label style="font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:8px;">Instagram o TikTok del negocio <span style="color:var(--muted); font-size:11px; text-transform:none; letter-spacing:0;">(opcional pero muy útil)</span></label>
+        <input class="text-field" type="text" id="c-red" placeholder="@tunegocio" style="margin-bottom:0;">
+      </div>
+    </div>
+
+    <div style="border:1px solid var(--border); padding:16px 20px; margin-bottom:32px; margin-top:8px;">
+      <p style="font-size:13px; color:var(--muted); line-height:1.7;">
+        🔒 Tus datos son confidenciales. No los compartimos con nadie ni te vamos a llegar con spam — solo con tu diagnóstico y una conversación puntual si lo que encontramos puede ayudarte.
+      </p>
+    </div>
+
+    <div class="nav-row">
+      <div class="nav-left">
+        <button class="btn-primary" onclick="submit()">Enviar y recibir mi diagnóstico →</button>
+        <button class="btn-secondary" onclick="goTo(8)">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 10: THANK YOU -->
+  <div class="screen" id="screen-9">
+    <span class="thanks-icon">🎯</span>
+    <div class="deco-line"></div>
+    <h2 class="thanks-title">Listo,<br><span>recibimos todo.</span></h2>
+    <p class="thanks-desc" id="thanks-personalized">
+      En las próximas 48 horas recibirás tu diagnóstico personalizado: qué está faltando en tu presencia digital, qué está haciendo tu competencia, y cuál sería el primer paso concreto para cambiar eso.
+    </p>
+    <div class="deliverable-box">
+      <h3>¿Qué vas a recibir?</h3>
+      <p>Un análisis directo de tu situación digital actual — sin tecnicismos, con recomendaciones concretas y ejemplos de video que funcionan para negocios como el tuyo.</p>
+    </div>
+    <p style="font-size:14px; color:var(--muted); line-height:1.6;">
+      Mientras tanto, si tienes alguna pregunta puedes escribirnos directamente.<br>
+      <strong style="color:#ccc;">Gracias por tu tiempo — esto vale la pena.</strong>
+    </p>
+  </div>
+
+  <!-- SCREEN 10: THANK YOU -->
+  <div class="screen" id="screen-10">
+    <span class="thanks-icon">🎯</span>
+    <div class="deco-line"></div>
+    <h2 class="thanks-title">Listo,<br><span>recibimos todo.</span></h2>
+    <p class="thanks-desc" id="thanks-personalized">
+      En las próximas 48 horas recibirás tu diagnóstico personalizado por WhatsApp y correo.
+    </p>
+    <div class="deliverable-box">
+      <h3>Lo que vas a recibir</h3>
+      <p>Un análisis directo de tu situación digital — qué está faltando, qué hace tu competencia que tú no, y qué tipo de video generaría más ventas para tu negocio. Sin tecnicismos, sin rodeos.</p>
+    </div>
+    <div style="border:1px solid var(--border); padding:20px 24px; margin-bottom:32px; background:var(--surface);">
+      <p style="font-family:var(--font-display); font-size:18px; letter-spacing:1px; margin-bottom:10px; color:#fff;">¿Mientras tanto?</p>
+      <p style="font-size:15px; color:#bbb; line-height:1.7; margin-bottom:16px;">
+        Si quieres ver ejemplos de lo que hacemos — video publicitario con nivel cinematográfico para marcas locales — escríbenos directamente a WhatsApp.
+      </p>
+      <a href="https://wa.me/message/TULINK" target="_blank"
+        style="display:inline-flex; align-items:center; gap:10px; background:var(--accent); color:#000; font-family:var(--font-display); font-size:17px; letter-spacing:1.5px; padding:14px 28px; text-decoration:none; transition:background 0.2s;"
+        onmouseover="this.style.background='#fff'" onmouseout="this.style.background='var(--accent)'">
+        💬 Ver ejemplos en WhatsApp
+      </a>
+    </div>
+    <p style="font-size:13px; color:var(--muted); line-height:1.6;">
+      <strong style="color:#555;">Cine para tu marca</strong> — producción audiovisual para negocios que quieren crecer en digital.
+    </p>
+  </div>
+
+</main>
+
+<script>
+  const TOTAL_STEPS = 9; // screens 1-9
+  let answers = {};
+
+  function goTo(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateProgress(n);
+  }
+
+  function updateProgress(step) {
+    const pct = step === 0 ? 0 : Math.round((step / TOTAL_STEPS) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+
+    const counter = document.getElementById('stepCounter');
+    if (step === 0 || step === 10) {
+      counter.textContent = '';
+    } else if (step === 1) {
+      counter.innerHTML = 'Datos del negocio';
+    } else if (step === 9) {
+      counter.innerHTML = 'Datos de contacto';
+    } else {
+      counter.innerHTML = `Pregunta <span>${step - 1}</span> de 7`;
+    }
+  }
+
+  function select(groupId, btn, multi) {
+    const group = document.getElementById(groupId);
+    const btns = group.querySelectorAll('.opt');
+
+    if (!multi) {
+      btns.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      answers[groupId] = btn.dataset.value;
+    } else {
+      if (btn.dataset.value === 'ninguna') {
+        btns.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        answers[groupId] = ['ninguna'];
+      } else {
+        btns.forEach(b => {
+          if (b.dataset.value === 'ninguna') b.classList.remove('selected');
+        });
+        btn.classList.toggle('selected');
+        const selected = [...btns]
+          .filter(b => b.classList.contains('selected'))
+          .map(b => b.dataset.value);
+        answers[groupId] = selected;
+      }
+    }
+
+    const err = document.getElementById('err-' + groupId.replace('q-',''));
+    if (err) err.classList.remove('show');
+  }
+
+  function next(screen) {
+    const validations = {
+      1: () => {
+        const val = document.getElementById('q-nombre').value.trim();
+        if (!val) { document.getElementById('err-nombre').classList.add('show'); return false; }
+        answers['q-nombre'] = val;
+        return true;
+      },
+      2: () => validate('q-sector', 'err-sector'),
+      3: () => validate('q-tiempo', 'err-tiempo'),
+      4: () => validateMulti('q-redes', 'err-redes'),
+      5: () => validate('q-frecuencia', 'err-frecuencia'),
+      6: () => validate('q-calidad', 'err-calidad'),
+      7: () => validate('q-frustracion', 'err-frustracion'),
+    };
+
+    const fn = validations[screen];
+    if (fn && !fn()) return;
+    goTo(screen + 1);
+  }
+
+  function nextToContact() {
+    if (!validate('q-competencia', 'err-competencia')) return;
+    answers['q-abierta'] = document.getElementById('q-abierta').value.trim();
+    goTo(9);
+  }
+
+  function validate(groupId, errId) {
+    const group = document.getElementById(groupId);
+    const selected = group.querySelector('.selected');
+    if (!selected) {
+      document.getElementById(errId).classList.add('show');
+      return false;
+    }
+    return true;
+  }
+
+  function validateMulti(groupId, errId) {
+    if (!answers[groupId] || answers[groupId].length === 0) {
+      document.getElementById(errId).classList.add('show');
+      return false;
+    }
+    return true;
+  }
+
+  function submit() {
+    let valid = true;
+
+    const nombre = document.getElementById('c-nombre').value.trim();
+    const whatsapp = document.getElementById('c-whatsapp').value.trim();
+    const email = document.getElementById('c-email').value.trim();
+
+    if (!nombre) { document.getElementById('err-c-nombre').classList.add('show'); valid = false; }
+    else document.getElementById('err-c-nombre').classList.remove('show');
+
+    if (!whatsapp) { document.getElementById('err-c-whatsapp').classList.add('show'); valid = false; }
+    else document.getElementById('err-c-whatsapp').classList.remove('show');
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailOk) { document.getElementById('err-c-email').classList.add('show'); valid = false; }
+    else document.getElementById('err-c-email').classList.remove('show');
+
+    if (!valid) return;
+
+    answers['c-nombre'] = nombre;
+    answers['c-whatsapp'] = whatsapp;
+    answers['c-email'] = email;
+    answers['c-red'] = document.getElementById('c-red').value.trim();
+
+    // Deshabilitar botón mientras envía
+    const btn = document.querySelector('#screen-9 .btn-primary');
+    btn.textContent = 'Enviando...';
+    btn.disabled = true;
+
+    // Armar payload legible para Formspree
+    const sectorLabels = {
+      'restaurante-cafe':'Restaurante / Café','moda-belleza':'Moda / Belleza',
+      'salud-bienestar':'Salud / Bienestar','comercio-retail':'Comercio / Retail',
+      'servicios-profesionales':'Servicios profesionales','construccion-finca-raiz':'Construcción / Finca raíz',
+      'educacion':'Educación','otro':'Otro'
+    };
+    const tiempoLabels = {
+      'menos-1':'Menos de 1 año','1-3':'Entre 1 y 3 años',
+      '3-10':'Entre 3 y 10 años','mas-10':'Más de 10 años'
+    };
+    const frecLabels = {
+      'diario':'Todos los días','varias-semana':'Varias veces por semana',
+      'una-semana':'Una vez por semana','esporadico':'Sin constancia','no-publicamos':'Prácticamente no publican'
+    };
+    const calidadLabels = {
+      'muy-bueno':'Muy bueno — producción profesional','regular':'Regular — lo hacen ellos mismos',
+      'necesita-mejorar':'Sabe que necesita mejorar','no-tenemos':'Sin contenido visual'
+    };
+    const frustrLabels = {
+      'no-se-por-donde':'No sabe por dónde empezar','sin-resultados':'Publica pero sin resultados',
+      'sin-tiempo':'Sin tiempo ni equipo','sin-presupuesto':'Cree que no tiene presupuesto',
+      'no-creo':'No cree que el digital funcione para su negocio'
+    };
+    const compLabels = {
+      'si-claramente':'Sí, claramente le están ganando terreno',
+      'creo-que-si':'Cree que sí, no lo monitorea','no-lo-se':'No lo sabe','no':'No, están bien posicionados'
+    };
+
+    const redes = Array.isArray(answers['q-redes']) ? answers['q-redes'].join(', ') : answers['q-redes'] || '—';
+
+    const payload = {
+      // Datos de contacto
+      'Nombre contacto':       answers['c-nombre'],
+      'WhatsApp':              answers['c-whatsapp'],
+      'Email':                 answers['c-email'],
+      'Instagram / TikTok':    answers['c-red'] || '—',
+      // Datos del negocio
+      'Nombre del negocio':    answers['q-nombre'] || '—',
+      'Sector':                sectorLabels[answers['q-sector']] || answers['q-sector'] || '—',
+      'Antigüedad':            tiempoLabels[answers['q-tiempo']] || answers['q-tiempo'] || '—',
+      'Redes activas':         redes,
+      'Frecuencia de publicación': frecLabels[answers['q-frecuencia']] || answers['q-frecuencia'] || '—',
+      'Calidad del contenido': calidadLabels[answers['q-calidad']] || answers['q-calidad'] || '—',
+      'Mayor obstáculo':       frustrLabels[answers['q-frustracion']] || answers['q-frustracion'] || '—',
+      'Competencia ganando':   compLabels[answers['q-competencia']] || answers['q-competencia'] || '—',
+      'Comentario libre':      answers['q-abierta'] || '—',
+      // Para que Formspree use el email del prospecto como reply-to
+      '_replyto':              answers['c-email'],
+      'subject':               `Nuevo diagnóstico — ${answers['q-nombre'] || 'Prospecto'} (${sectorLabels[answers['q-sector']] || ''})`
+    };
+
+    const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz_cJNcZs37jlQM3kQxQIuDlDIbz9U6e22jmCchCf5sOFm4ZXvA8qArG7xBV5Z2KrvB/exec';
+    const FORMSPREE_URL = 'https://formspree.io/f/mjgzgegp';
+
+    Promise.allSettled([
+      fetch(SHEETS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      }),
+      fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+    ])
+    .then(results => {
+      // Avanzar siempre, aunque uno de los dos falle
+      const negocio = answers['q-nombre'] || 'tu negocio';
+      document.getElementById('thanks-personalized').textContent =
+        `Hola ${nombre}, en las próximas 48 horas te enviamos el diagnóstico de ${negocio} por WhatsApp al ${whatsapp} y por correo a ${email}.`;
+      goTo(10);
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('stepCounter').textContent = '';
+    })
+    .catch(() => {
+      btn.textContent = 'Enviar y recibir mi diagnóstico →';
+      btn.disabled = false;
+      alert('No se pudo conectar. Verifica tu internet e intenta de nuevo.');
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const active = document.querySelector('.screen.active');
+      const btn = active.querySelector('.btn-primary');
+      if (btn) btn.click();
+    }
+  });
+
+  updateProgress(0);
+</script>
+</body>
+</html>
